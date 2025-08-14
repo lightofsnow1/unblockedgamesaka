@@ -1,52 +1,111 @@
-<html><head><base target="_blank"><base target="_blank"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/unblocked1889/slope@latest/style.css">
-    <script src="https://www.id.net/api/user_data/autologin?callback=idnet_autologin&amp;app_id=55961e5ee694aa0ae90003e8"></script><script src="https://www.id.net/api/user_data/autologin?callback=idnet_autologin&amp;app_id=55961e5ee694aa0ae90003e8"></script><script src="https://cdn.jsdelivr.net/gh/unblocked1889/slope@latest/UnityProgress.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/unblocked1889/slope@latest/unityloader41.js"></script>
+<!DOCTYPE html>
+<html lang="en-us">
 
-    <script type="text/javascript">
-      var gameInstance;
-      window.onload = function () {
-        let  bttn = document.createElement( "button" );
-        bttn.appendChild(document.createTextNode( "CLICK TO PLAY NOW" ));
-        bttn.setAttribute('id', 'run_game');
-        bttn.style.display = 'none';
-        bttn.style.position = 'absolute';
-        document.body.appendChild(bttn);
-        bttn.style.display = 'block';
-        bttn.style.left = ((document.body.clientWidth - bttn.offsetWidth)/2) + 'px';
-        bttn.style.top = ((document.body.clientHeight - bttn.offsetHeight)/2) + 'px';
-        bttn.onclick = function () {
-          gameInstance = UnityLoader.instantiate("gameContainer", "https://cdn.jsdelivr.net/gh/unblocked1889/slope@latest/slope.json", {onProgress: UnityProgress,Module:{onRuntimeInitialized: function() {UnityProgress(gameInstance, "complete")}}});
-          this.remove();
+<head>
+    <base href="https://cdn.jsdelivr.net/gh/gn-math/assets@51462750d29b68ac1e33887c1bf13d9c478d5ead/198/">
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | Slope Plus</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
         }
-      }
+
+        #unity-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+    <script src="TemplateData/UnityProgress.js"></script>
+    <script src="Build/UnityLoader.js"></script>
+    <script>
+        function mergeFiles(fileParts) {
+            return new Promise((resolve, reject) => {
+                let buffers = [];
+
+                function fetchPart(index) {
+                    if (index >= fileParts.length) {
+                        let mergedBlob = new Blob(buffers);
+                        let mergedFileUrl = URL.createObjectURL(mergedBlob);
+                        resolve(mergedFileUrl);
+                        return;
+                    }
+                    fetch(fileParts[index]).then((response) => response.arrayBuffer()).then((data) => {
+                        buffers.push(data);
+                        fetchPart(index + 1);
+                    }).catch(reject);
+                }
+                fetchPart(0);
+            });
+        }
+
+        function getParts(file, start, end) {
+            let parts = [];
+            for (let i = start; i <= end; i++) {
+                parts.push(file + ".part" + i);
+            }
+            return parts;
+        }
+
+        window.addEventListener('resize', resizeGameContainer);
+
+        function resizeGameContainer() {
+            const container = document.getElementById('gameContainer');
+            if (container) {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                container.style.width = `${width}px`;
+                container.style.height = `${height}px`;
+            }
+        }
+
+        window.onload = function () {
+            resizeGameContainer();
+
+            Promise.all([
+                mergeFiles(getParts("https://cdn.jsdelivr.net/gh/gn-math/assets@51462750d29b68ac1e33887c1bf13d9c478d5ead/198/Build/WEB1.2.1.data.unityweb", 1, 2))
+            ]).then(([dataUrl]) => {
+                let json = {
+                    companyName: "Slope Plus",
+                    productName: "Slope Plus",
+                    dataUrl: dataUrl,
+                    wasmCodeUrl: "https://cdn.jsdelivr.net/gh/gn-math/assets@51462750d29b68ac1e33887c1bf13d9c478d5ead/198/Build/WEB1.2.1.wasm.code.unityweb",
+                    wasmFrameworkUrl: "https://cdn.jsdelivr.net/gh/gn-math/assets@51462750d29b68ac1e33887c1bf13d9c478d5ead/198/Build/WEB1.2.1.wasm.framework.unityweb",
+                    TOTAL_MEMORY: 268435456,
+                    graphicsAPI: ["WebGL 2.0", "WebGL 1.0"],
+                    webglContextAttributes: {
+                        preserveDrawingBuffer: false
+                    },
+                    splashScreenStyle: "Dark",
+                    backgroundColor: "#000000"
+                }
+                let blob = new Blob([JSON.stringify(json)], {
+                    type: 'application/json'
+                });
+                let blobUrl = URL.createObjectURL(blob);
+                UnityLoader.instantiate("gameContainer", json, {
+                    onProgress: UnityProgress,
+                    url: blobUrl
+                });
+            });
+        };
     </script>
-    </head><body><div class="webgl-content">
-      <div id="gameContainer" style="width: 100%; height: 100%; margin: 0px; padding: 0px; border: 0px; position: relative; background: rgb(35, 31, 32);"><canvas id="#canvas" width="1154" height="721" style="cursor: default;"></canvas><div class="logo Dark" style="display: none;"></div><div class="progress Dark" style="display: none;"><div class="empty" style="width: 0%;"></div><div class="full" style="width: 100%;"></div></div></div>
+</head>
+
+<body>
+    <div class="webgl-content">
+        <div id="gameContainer"></div>
     </div>
-<style>
-button {
-  min-width: 100%;
-  font-family: inherit;
-  appearance: none;
-  border: 0;
-  border-radius: 5px;
-  background: #2c2c2c;
-  color: #fff;
-  padding: 18px 46px;
-  font-size: 28px;
-  cursor: pointer;
-}
-button:hover {
-  background: #3f3f3f;
-}
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px #cbd6ee;
-} 
-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-</style><script src="blob:https://1157037601-atari-embeds.googleusercontent.com/e67edcbb-af36-4f85-be8e-fa0c5ea769cd"></script><script src="blob:https://1860572574-atari-embeds.googleusercontent.com/506e7095-eb4d-4736-b56c-9b06701ce692"></script></body></html>
+</body>
+
+</html>
